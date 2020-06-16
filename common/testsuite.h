@@ -12563,6 +12563,66 @@ static void mavlink_test_supported_tunes(uint8_t system_id, uint8_t component_id
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }
 
+static void mavlink_test_ext_core_state(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+{
+#ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
+    mavlink_status_t *status = mavlink_get_channel_status(MAVLINK_COMM_0);
+        if ((status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1) && MAVLINK_MSG_ID_EXT_CORE_STATE >= 256) {
+            return;
+        }
+#endif
+    mavlink_message_t msg;
+        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+        uint16_t i;
+    mavlink_ext_core_state_t packet_in = {
+        93372036854775807ULL,{ 73.0, 74.0, 75.0 },{ 157.0, 158.0, 159.0 },{ 241.0, 242.0, 243.0, 244.0 },{ 353.0, 354.0, 355.0 },{ 437.0, 438.0, 439.0 },{ 521.0, 522.0, 523.0, 524.0, 525.0, 526.0, 527.0, 528.0, 529.0, 530.0, 531.0, 532.0, 533.0, 534.0, 535.0, 536.0, 537.0, 538.0, 539.0, 540.0, 541.0, 542.0, 543.0, 544.0, 545.0, 546.0, 547.0, 548.0, 549.0, 550.0, 551.0, 552.0, 553.0, 554.0, 555.0, 556.0, 557.0, 558.0, 559.0, 560.0, 561.0, 562.0, 563.0, 564.0, 565.0 }
+    };
+    mavlink_ext_core_state_t packet1, packet2;
+        memset(&packet1, 0, sizeof(packet1));
+        packet1.usec = packet_in.usec;
+        
+        mav_array_memcpy(packet1.p_wi, packet_in.p_wi, sizeof(float)*3);
+        mav_array_memcpy(packet1.v_wi, packet_in.v_wi, sizeof(float)*3);
+        mav_array_memcpy(packet1.q_wi, packet_in.q_wi, sizeof(float)*4);
+        mav_array_memcpy(packet1.b_a, packet_in.b_a, sizeof(float)*3);
+        mav_array_memcpy(packet1.b_w, packet_in.b_w, sizeof(float)*3);
+        mav_array_memcpy(packet1.cov_urt, packet_in.cov_urt, sizeof(float)*45);
+        
+#ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
+        if (status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1) {
+           // cope with extensions
+           memset(MAVLINK_MSG_ID_EXT_CORE_STATE_MIN_LEN + (char *)&packet1, 0, sizeof(packet1)-MAVLINK_MSG_ID_EXT_CORE_STATE_MIN_LEN);
+        }
+#endif
+        memset(&packet2, 0, sizeof(packet2));
+    mavlink_msg_ext_core_state_encode(system_id, component_id, &msg, &packet1);
+    mavlink_msg_ext_core_state_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+    mavlink_msg_ext_core_state_pack(system_id, component_id, &msg , packet1.usec , packet1.p_wi , packet1.v_wi , packet1.q_wi , packet1.b_a , packet1.b_w , packet1.cov_urt );
+    mavlink_msg_ext_core_state_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+    mavlink_msg_ext_core_state_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.usec , packet1.p_wi , packet1.v_wi , packet1.q_wi , packet1.b_a , packet1.b_w , packet1.cov_urt );
+    mavlink_msg_ext_core_state_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+        mavlink_msg_to_send_buffer(buffer, &msg);
+        for (i=0; i<mavlink_msg_get_send_buffer_length(&msg); i++) {
+            comm_send_ch(MAVLINK_COMM_0, buffer[i]);
+        }
+    mavlink_msg_ext_core_state_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+        
+        memset(&packet2, 0, sizeof(packet2));
+    mavlink_msg_ext_core_state_send(MAVLINK_COMM_1 , packet1.usec , packet1.p_wi , packet1.v_wi , packet1.q_wi , packet1.b_a , packet1.b_w , packet1.cov_urt );
+    mavlink_msg_ext_core_state_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+}
+
 static void mavlink_test_wheel_distance(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
 {
 #ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
@@ -13321,6 +13381,7 @@ static void mavlink_test_common(uint8_t system_id, uint8_t component_id, mavlink
     mavlink_test_component_information(system_id, component_id, last_msg);
     mavlink_test_play_tune_v2(system_id, component_id, last_msg);
     mavlink_test_supported_tunes(system_id, component_id, last_msg);
+    mavlink_test_ext_core_state(system_id, component_id, last_msg);
     mavlink_test_wheel_distance(system_id, component_id, last_msg);
     mavlink_test_winch_status(system_id, component_id, last_msg);
     mavlink_test_open_drone_id_basic_id(system_id, component_id, last_msg);
