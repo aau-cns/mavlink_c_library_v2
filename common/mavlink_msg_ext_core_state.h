@@ -3,16 +3,16 @@
 
 #define MAVLINK_MSG_ID_EXT_CORE_STATE 6000
 
-MAVPACKED(
+
 typedef struct __mavlink_ext_core_state_t {
  uint64_t usec; /*< [us] Timestamp (UNIX)*/
  float p_wi[3]; /*<  position x y z of i expressed in w (NED)*/
  float v_wi[3]; /*<  velocity vx vy vz of i expressed in w (NED)*/
- float q_wi[4]; /*<  orientation qx qy qz qw from i to w (NED) in hamiltonian convention*/
+ float q_wi[4]; /*<  orientation qw qx qy qz from i to w (NED) in hamiltonian convention*/
  float b_a[3]; /*<  accelerometer bias*/
  float b_w[3]; /*<  gyroscope bias*/
  float cov_urt[45]; /*<  position orientation and velocity upper triangular covariance in Row-Major order*/
-}) mavlink_ext_core_state_t;
+} mavlink_ext_core_state_t;
 
 #define MAVLINK_MSG_ID_EXT_CORE_STATE_LEN 252
 #define MAVLINK_MSG_ID_EXT_CORE_STATE_MIN_LEN 252
@@ -67,7 +67,7 @@ typedef struct __mavlink_ext_core_state_t {
  * @param usec [us] Timestamp (UNIX)
  * @param p_wi  position x y z of i expressed in w (NED)
  * @param v_wi  velocity vx vy vz of i expressed in w (NED)
- * @param q_wi  orientation qx qy qz qw from i to w (NED) in hamiltonian convention
+ * @param q_wi  orientation qw qx qy qz from i to w (NED) in hamiltonian convention
  * @param b_a  accelerometer bias
  * @param b_w  gyroscope bias
  * @param cov_urt  position orientation and velocity upper triangular covariance in Row-Major order
@@ -111,7 +111,7 @@ static inline uint16_t mavlink_msg_ext_core_state_pack(uint8_t system_id, uint8_
  * @param usec [us] Timestamp (UNIX)
  * @param p_wi  position x y z of i expressed in w (NED)
  * @param v_wi  velocity vx vy vz of i expressed in w (NED)
- * @param q_wi  orientation qx qy qz qw from i to w (NED) in hamiltonian convention
+ * @param q_wi  orientation qw qx qy qz from i to w (NED) in hamiltonian convention
  * @param b_a  accelerometer bias
  * @param b_w  gyroscope bias
  * @param cov_urt  position orientation and velocity upper triangular covariance in Row-Major order
@@ -181,7 +181,7 @@ static inline uint16_t mavlink_msg_ext_core_state_encode_chan(uint8_t system_id,
  * @param usec [us] Timestamp (UNIX)
  * @param p_wi  position x y z of i expressed in w (NED)
  * @param v_wi  velocity vx vy vz of i expressed in w (NED)
- * @param q_wi  orientation qx qy qz qw from i to w (NED) in hamiltonian convention
+ * @param q_wi  orientation qw qx qy qz from i to w (NED) in hamiltonian convention
  * @param b_a  accelerometer bias
  * @param b_w  gyroscope bias
  * @param cov_urt  position orientation and velocity upper triangular covariance in Row-Major order
@@ -299,7 +299,7 @@ static inline uint16_t mavlink_msg_ext_core_state_get_v_wi(const mavlink_message
 /**
  * @brief Get field q_wi from ext_core_state message
  *
- * @return  orientation qx qy qz qw from i to w (NED) in hamiltonian convention
+ * @return  orientation qw qx qy qz from i to w (NED) in hamiltonian convention
  */
 static inline uint16_t mavlink_msg_ext_core_state_get_q_wi(const mavlink_message_t* msg, float *q_wi)
 {
